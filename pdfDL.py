@@ -26,6 +26,18 @@ then minimize and unminimize the window and enter the website's url. Then press 
 If you get an error, you may need to pip3 install python3-tk or sudo apt-get install python3-tk or 
 however you can get tkinter for python3
 '''
+
+#Method to ask user for path to save directory, assigns default path if no directory is chosen
+
+
+
+#Method to show a message in the ScrolledText widget
+def msg(message):
+    m = message + "\n"
+    infoWin.insert('end', m)
+    infoWin.see('end')
+    root.after(200, root.update())
+
 #method that takes in a website's html text and the website's url and returns a list of pdf links found on it
 def getLinks(html, url):
     linkLst = []
@@ -35,7 +47,9 @@ def getLinks(html, url):
         if ".pdf" in l:#remove this conditional statement to just add any links to list
             linkLst.append(l)
             out = "Found link: " + l
-            infoWin.insert(INSERT, out)
+            msg(out)
+            #root.update()
+            #infoWin.insert('end', out)
             print(out)
     return linkLst
         
@@ -86,17 +100,23 @@ def dl():
                 if not links:
                     #out = "No pdf file links found."
                     #info.insert(END, out)
-                    time.sleep(3)
+                    #time.sleep(3)
                     out = "No pdf file links found."
-                    infoWin.insert(INSERT, out)
+                    #infoWin.insert('end', out)
+                    msg(out)
+                    #root.update()
                     print("No pdf file links found.")
                     break
                 out = "Downloading from " + link + "..."
-                infoWin.insert(INSERT, out)    
+                #infoWin.insert('end', out)
+                msg(out)
+                root.update()
                 print("Downloading from " + link + "...")
                 filename = link[link.rfind("/") + 1:]
                 out = "Saving as " + filename
-                infoWin.insert(INSERT, out)
+                #infoWin.insert('end', out)
+                msg(out)
+                #root.update()
                 print("Saving as " + filename)
                 fi = requests.get(link)
                 fullPath = os.path.join(pa, filename)
@@ -107,10 +127,13 @@ def dl():
             #infoWinTxt.set(out)
             #info.insert(END, out)
             out = "Done!"
-            infoWin.insert(INSERT, out)
+            #infoWin.insert('end', out)
+            msg(out)
+            #root.update()
             print("Done!")
-            time.sleep(3)
-            root.destroy()#Close window when download complete
+            #time.sleep(3)
+            
+            root.after(10000, root.destroy())#Close window when download complete
             
             #output.close()
             
@@ -128,6 +151,7 @@ def dl():
 #***Creating a GUI to make this PDF Downloader more user friendly***
 root = Tk()
 root.title("PDF Downloader")
+root.geometry("500x600")
 
 
 label1 = Label(root, text = "PDF File Downloader")
@@ -136,7 +160,17 @@ label2 = Label(root, text = "Enter website url: ")
 wEntry = Entry(root)
 
 label3 = Label(root, text = "Files are being saved to:")
-path = os.path.normpath(filedialog.askdirectory(parent = root))
+
+
+path = os.path.normpath(filedialog.askdirectory(parent = root, initialdir= os.path.expanduser("~")))
+
+#if no directory is chosen, files are saved to Downloads directory
+if path == "" or path == "." or path == "-":
+    p = os.path.expanduser('~')
+    path = os.path.join(p, "Downloads")
+
+    
+
 
 label7 = Label(root, text = str(path))
 
@@ -152,7 +186,7 @@ label6 = Label(root, text = " ")
 #contents = output.getvalue()
 #print("Here is what is in the string stream when initialized:")
 #print(contents)
-infoWin = ScrolledText.ScrolledText(root, width = 30, height = 8)
+infoWin = ScrolledText.ScrolledText(root, width = 70, height = 10)
 #infoWin.configure(state = 'disabled')
 
 
@@ -168,11 +202,13 @@ wEntry.focus()
 label3.pack()
 label7.pack()
 
-
+#pathButton = Button(root, text = "Choose where to save your files", command = pathChooser)
+#pathButton.pack()
 startButton = Button(root, text = "Start!", command = dl)
 startButton.pack()
 
 
 infoWin.pack()
 root.mainloop() 
+
 

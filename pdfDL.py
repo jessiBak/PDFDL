@@ -176,14 +176,3 @@ startButton.pack()
 infoWin.pack()
 root.mainloop() 
 
-'''
-Notes:
-8/1/2020: This works for https://web.njit.edu/~marvin/cs341/notes/ but not for https://web.njit.edu/~sohna/cs288/index.html 
-...Why? -_-
-8/2/2020: Sohn's website had more html to search through in frames, now it works for his website too! 
-This means it should work on more websites now... Unless the website uses iFrames (Add support for this later)
-To do:
-Fix the GUI. (I want everything that prints out to command line/ terminal to be visible on window)
-Make sure this works for most websites w/ pdf links (search through iframes, look up if there are other places links
-could be hiding
-'''

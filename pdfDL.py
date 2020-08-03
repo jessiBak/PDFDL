@@ -12,8 +12,7 @@ from requests.exceptions import HTTPError
 import os.path
 import platform
 import re
-#from io import *
-#from contextlib import redirect_stdout
+
 '''
 Created by Jessica Bakare 
 
@@ -26,9 +25,6 @@ then minimize and unminimize the window and enter the website's url. Then press 
 If you get an error, you may need to pip3 install python3-tk or sudo apt-get install python3-tk or 
 however you can get tkinter for python3
 '''
-
-#Method to ask user for path to save directory, assigns default path if no directory is chosen
-
 
 
 #Method to show a message in the ScrolledText widget
@@ -48,8 +44,6 @@ def getLinks(html, url):
             linkLst.append(l)
             out = "Found link: " + l
             msg(out)
-            #root.update()
-            #infoWin.insert('end', out)
             print(out)
     return linkLst
         
@@ -62,80 +56,51 @@ def dl():
             r = requests.get(web)
             html = r.text
             s = BeautifulSoup(html, "html.parser")
-            #print("Here is web html soup: ")
-            #print(s.prettify())
+
             #Create list of links to pdf files found
             links = []
-            # make a list of .html original website first, then search for frames:
             
+            # make a list of .html original website first, then search for frames:
             #search initial given website fo links
+            
             links = links + getLinks(html, web) #this won't add anything if the pdf links are in html files found in frames/iframes, so...
             
             #get html found in frames and iframes:
             frames = []
             fs = s.find_all(['frame', 'iframe'])
-            #print("fs:")
-            #print(fs)
-            #print("\n\n\n")
             for fr in fs:
                 frames.append(str(web[:web.rfind("/") + 1] + fr.get('src')))
-                
-            #print("Here are the frames found: ")
-            #print(frames)
                 
             #find the pdf links in each url and add it to the list of links
             for url in frames:
                 req = requests.get(url)
                 h = req.text
-                #print("Here is the text of a frame " + url + ":")
-                #print(h)
-                #print("\n\n\n\n\n")
                 links = links + getLinks(h, url)
-            
-            #print("Here are all the links found:", file = output)
-            #print(links, file = output)
             
             #***Downloading the PDFs:***
             for link in links:
                 if not links:
-                    #out = "No pdf file links found."
-                    #info.insert(END, out)
-                    #time.sleep(3)
                     out = "No pdf file links found."
-                    #infoWin.insert('end', out)
                     msg(out)
-                    #root.update()
                     print("No pdf file links found.")
                     break
                 out = "Downloading from " + link + "..."
-                #infoWin.insert('end', out)
                 msg(out)
                 root.update()
                 print("Downloading from " + link + "...")
                 filename = link[link.rfind("/") + 1:]
                 out = "Saving as " + filename
-                #infoWin.insert('end', out)
                 msg(out)
-                #root.update()
                 print("Saving as " + filename)
                 fi = requests.get(link)
                 fullPath = os.path.join(pa, filename)
                 #print("The full path is: " + str(fullPath))
                 with open(fullPath, "wb") as pdf:
                     pdf.write(fi.content)
-            #out = "Done!"
-            #infoWinTxt.set(out)
-            #info.insert(END, out)
             out = "Done!"
-            #infoWin.insert('end', out)
             msg(out)
-            #root.update()
             print("Done!")
-            #time.sleep(3)
-            
             root.after(10000, root.destroy())#Close window when download complete
-            
-            #output.close()
             
         except HTTPError as err:
             print("Oh no! an HTTP error has occurred:")
@@ -146,8 +111,7 @@ def dl():
             print(e)
 
             
-                
-
+             
 #***Creating a GUI to make this PDF Downloader more user friendly***
 root = Tk()
 root.title("PDF Downloader")
@@ -169,8 +133,6 @@ if path == "" or path == "." or path == "-":
     p = os.path.expanduser('~')
     path = os.path.join(p, "Downloads")
 
-    
-
 
 label7 = Label(root, text = str(path))
 
@@ -179,15 +141,7 @@ label5 = Label(root, text = " ")
 label6 = Label(root, text = " ")
 
 
-
-#Here is where print outputs should be going......
-
-#output = StringIO()
-#contents = output.getvalue()
-#print("Here is what is in the string stream when initialized:")
-#print(contents)
 infoWin = ScrolledText.ScrolledText(root, width = 70, height = 10)
-#infoWin.configure(state = 'disabled')
 
 
 #Put them on the screen
@@ -202,8 +156,6 @@ wEntry.focus()
 label3.pack()
 label7.pack()
 
-#pathButton = Button(root, text = "Choose where to save your files", command = pathChooser)
-#pathButton.pack()
 startButton = Button(root, text = "Start!", command = dl)
 startButton.pack()
 
